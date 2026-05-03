@@ -1,0 +1,31 @@
+version: "3.9"
+
+services:
+  wastewise-ai:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
+    image: wastewise-ai:latest
+    container_name: wastewise-ai
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=${FLASK_ENV:-production}
+      - FLASK_SECRET_KEY=${FLASK_SECRET_KEY:-change-me}
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - PORT=5000
+    volumes:
+      - ./models:/app/models:ro      # Mount pre-trained weights
+      - uploads_data:/app/uploads    # Persistent upload storage
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c",
+             "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  uploads_data:

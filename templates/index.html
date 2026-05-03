@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WasteWise AI — Intelligent Waste Detection & Disposal Guide</title>
+  <meta name="description" content="AI-powered waste classification system with generative AI explanations. Supports SDG 11, 12, and 13 by promoting responsible waste disposal." />
+  <meta name="keywords" content="waste detection, AI, recycling, sustainability, SDG, EfficientNet, Generative AI" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════════ HEADER -->
+  <header class="site-header">
+    <nav class="nav-container">
+      <div class="logo">
+        <span class="logo-icon">♻️</span>
+        <span class="logo-text">WasteWise<span class="logo-accent">AI</span></span>
+      </div>
+      <div class="nav-badges">
+        <span class="sdg-badge sdg-11">SDG 11</span>
+        <span class="sdg-badge sdg-12">SDG 12</span>
+        <span class="sdg-badge sdg-13">SDG 13</span>
+      </div>
+    </nav>
+  </header>
+
+  <!-- ══════════════════════════════════════════════════════════════ HERO -->
+  <section class="hero">
+    <div class="hero-glow hero-glow-1"></div>
+    <div class="hero-glow hero-glow-2"></div>
+    <div class="hero-content">
+      <div class="hero-tag">🌍 AI-Powered Environmental Intelligence</div>
+      <h1 class="hero-title">
+        Detect. Understand.<br />
+        <span class="gradient-text">Dispose Responsibly.</span>
+      </h1>
+      <p class="hero-subtitle">
+        Upload any waste image — our Hybrid AI (EfficientNet-B2 + Gemini GenAI) 
+        classifies it and generates personalised disposal instructions, 
+        recyclability insights, and environmental impact data.
+      </p>
+      <div class="hero-stats">
+        <div class="stat">
+          <span class="stat-num">7</span>
+          <span class="stat-label">Waste Categories</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-num">GenAI</span>
+          <span class="stat-label">Explanations</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-num">Real-time</span>
+          <span class="stat-label">Analysis</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════ MAIN APP -->
+  <main class="app-container">
+    <div class="app-grid">
+
+      <!-- Upload Panel -->
+      <section class="panel upload-panel" id="upload-section">
+        <div class="panel-header">
+          <h2 class="panel-title">📷 Upload Waste Image</h2>
+          <p class="panel-sub">Drag & drop or click to browse</p>
+        </div>
+
+        <div class="drop-zone" id="drop-zone">
+          <div class="drop-zone-inner" id="drop-zone-inner">
+            <div class="upload-icon-wrap">
+              <svg class="upload-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M32 44V20M32 20L22 30M32 20L42 30" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M16 48h32" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <p class="drop-text">Drop image here</p>
+            <p class="drop-subtext">PNG, JPG, WEBP • Max 10MB</p>
+            <input type="file" id="file-input" accept="image/*" hidden />
+            <button class="btn btn-primary" id="browse-btn">Choose File</button>
+          </div>
+          <!-- Preview replaces above when image loaded -->
+          <div class="image-preview-wrap" id="image-preview-wrap" style="display:none;">
+            <img id="image-preview" class="image-preview" alt="Uploaded waste" />
+            <div class="preview-overlay">
+              <button class="btn btn-ghost btn-sm" id="change-img-btn">Change Image</button>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn btn-analyze" id="analyze-btn" disabled>
+          <span class="btn-text">🔍 Analyze Waste</span>
+          <span class="btn-loader" style="display:none">
+            <span class="spinner"></span> Analyzing…
+          </span>
+        </button>
+
+        <div class="error-box" id="error-box" style="display:none;">
+          <span class="error-icon">⚠️</span>
+          <span id="error-msg"></span>
+        </div>
+      </section>
+
+      <!-- Results Panel -->
+      <section class="panel results-panel" id="results-panel">
+        <div class="empty-state" id="empty-state">
+          <div class="empty-icon">🌱</div>
+          <h3>Results will appear here</h3>
+          <p>Upload an image and click Analyze to get started</p>
+        </div>
+
+        <div class="results-content" id="results-content" style="display:none;">
+
+          <!-- Classification Card -->
+          <div class="result-card classification-card">
+            <div class="result-label">Detected Waste</div>
+            <div class="classification-main">
+              <span class="waste-icon" id="res-icon">♻️</span>
+              <div>
+                <div class="waste-name" id="res-label">Glass</div>
+                <div class="waste-class" id="res-class">glass</div>
+              </div>
+            </div>
+            <div class="confidence-wrap">
+              <div class="confidence-label">
+                <span>Confidence</span>
+                <span id="res-confidence">92.3%</span>
+              </div>
+              <div class="confidence-bar">
+                <div class="confidence-fill" id="confidence-fill"></div>
+              </div>
+            </div>
+            <div class="badges-row">
+              <span class="badge" id="recyclable-badge">♻️ Recyclable</span>
+              <span class="badge badge-bin" id="bin-badge">🗑️ Blue Bin</span>
+            </div>
+          </div>
+
+          <!-- GenAI Explanation Cards -->
+          <div class="info-grid">
+            <div class="info-card" id="card-explanation">
+              <div class="info-card-icon">🧠</div>
+              <div class="info-card-title">AI Explanation</div>
+              <div class="info-card-body" id="res-explanation"></div>
+            </div>
+            <div class="info-card" id="card-disposal">
+              <div class="info-card-icon">📋</div>
+              <div class="info-card-title">Disposal Method</div>
+              <div class="info-card-body" id="res-disposal"></div>
+            </div>
+            <div class="info-card" id="card-recyclability">
+              <div class="info-card-icon">♻️</div>
+              <div class="info-card-title">Recyclability</div>
+              <div class="info-card-body" id="res-recyclability"></div>
+            </div>
+            <div class="info-card" id="card-impact">
+              <div class="info-card-icon">🌍</div>
+              <div class="info-card-title">Environmental Impact</div>
+              <div class="info-card-body" id="res-impact"></div>
+            </div>
+            <div class="info-card" id="card-reuse">
+              <div class="info-card-icon">💡</div>
+              <div class="info-card-title">Reuse Tips</div>
+              <div class="info-card-body" id="res-reuse"></div>
+            </div>
+            <div class="info-card sdg-card" id="card-sdg">
+              <div class="info-card-icon">🎯</div>
+              <div class="info-card-title">SDG Contribution</div>
+              <div class="info-card-body" id="res-sdg"></div>
+            </div>
+          </div>
+
+          <!-- All Scores -->
+          <div class="scores-section">
+            <div class="scores-title">📊 All Category Scores</div>
+            <div class="scores-bars" id="scores-bars"></div>
+          </div>
+
+          <div class="processing-time" id="processing-time"></div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- ══════════════════════════════════════════════════════════ FEATURES -->
+  <section class="features-section">
+    <div class="features-container">
+      <h2 class="section-title">Hybrid AI Architecture</h2>
+      <p class="section-sub">WasteWise AI combines three AI systems into one intelligent pipeline</p>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🧬</div>
+          <h3>EfficientNet-B2</h3>
+          <p>Deep learning image classifier from the detect-waste research project. Identifies 7 waste categories with high accuracy.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">✨</div>
+          <h3>Gemini GenAI</h3>
+          <p>Google's Generative AI converts bare predictions into rich, personalised disposal guides and environmental insights.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <h3>Flask REST API</h3>
+          <p>Production-grade inference server with real-time responses, containerized with Docker for scalable cloud deployment.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🌿</div>
+          <h3>SDG Aligned</h3>
+          <p>Every prediction maps to UN Sustainable Development Goals 11, 12, and 13 — making AI work for the planet.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════ FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-content">
+      <div class="footer-logo">♻️ WasteWise AI</div>
+      <p class="footer-text">
+        Built on <a href="https://github.com/wimlds-trojmiasto/detect-waste" target="_blank">detect-waste</a> 
+        · Powered by EfficientNet-B2 + Google Gemini · Containerized with Docker
+      </p>
+      <p class="footer-sdg">🌍 Supporting UN SDGs 11 · 12 · 13</p>
+    </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
